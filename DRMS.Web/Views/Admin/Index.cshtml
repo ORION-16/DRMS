@@ -1,0 +1,79 @@
+@model IEnumerable<DRMS.Application.DTOs.DeploymentRequestDto>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row mb-4 align-items-center mt-3">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1 text-white">Admin Overview</h2>
+        <p class="text-secondary">View and filter all deployment requests across the organization.</p>
+    </div>
+</div>
+
+<div class="glass-panel p-4 mb-5">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Filter by Project</label>
+            <select name="projectId" class="form-select" asp-items="ViewBag.Projects">
+                <option value="">-- All Projects --</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Filter by Status</label>
+            <select name="statusId" class="form-select" asp-items="ViewBag.Statuses">
+                <option value="">-- All Statuses --</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex">
+            <button type="submit" class="btn btn-primary btn-magnet px-4 flex-grow-1 me-2">Apply Filters</button>
+            <a asp-action="Index" class="btn btn-outline-light btn-magnet">Clear</a>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive pb-5">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Req #</th>
+                <th>Project</th>
+                <th>Environment</th>
+                <th>Type</th>
+                <th>Requested By</th>
+                <th>Target Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-secondary">No requests found matching the criteria.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-white">@item.RequestNumber</td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25">@item.ProjectName</span>
+                        </td>
+                        <td>@item.EnvironmentName</td>
+                        <td>@item.DeploymentTypeName</td>
+                        <td>@item.RequestedByName</td>
+                        <td>@item.RequestedDeploymentDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <partial name="_StatusBadge" model="item.CurrentStatus" />
+                        </td>
+                        <td>
+                            <a asp-controller="Admin" asp-action="History" asp-route-id="@item.DeploymentRequestId" class="btn btn-sm btn-outline-info btn-magnet">History</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

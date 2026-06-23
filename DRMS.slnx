@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DRMS.Application/DRMS.Application.csproj" />
+  <Project Path="DRMS.Domain/DRMS.Domain.csproj" />
+  <Project Path="DRMS.Infrastructure/DRMS.Infrastructure.csproj" />
+  <Project Path="DRMS.Web/DRMS.Web.csproj" />
+</Solution>

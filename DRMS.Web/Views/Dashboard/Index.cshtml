@@ -1,0 +1,95 @@
+@model IEnumerable<DRMS.Application.DTOs.DeploymentRequestDto>
+@{
+    ViewData["Title"] = "Developer Dashboard";
+    var summary = ViewBag.Summary as DRMS.Application.DTOs.DashboardSummaryDto;
+}
+
+<div class="row mb-5 align-items-center mt-3">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1 text-white">Dashboard</h2>
+        <p class="text-secondary">Welcome back! Here's an overview of your deployment requests.</p>
+    </div>
+</div>
+
+<div class="row mb-5 g-4">
+    <div class="col-md-2 col-sm-4">
+        <div class="spotlight-card h-100 p-4 text-center">
+            <h6 class="text-secondary text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Total</h6>
+            <h2 class="display-5 fw-bold mb-0 text-white">@summary?.TotalCount</h2>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4">
+        <div class="spotlight-card h-100 p-4 text-center" style="--accent-glow: rgba(14, 165, 233, 0.2);">
+            <h6 class="text-info text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Pending</h6>
+            <h2 class="display-5 fw-bold mb-0 text-white">@summary?.PendingCount</h2>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4">
+        <div class="spotlight-card h-100 p-4 text-center" style="--accent-glow: rgba(16, 185, 129, 0.2);">
+            <h6 class="text-success text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Deployed</h6>
+            <h2 class="display-5 fw-bold mb-0 text-white">@summary?.DeployedCount</h2>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4">
+        <div class="spotlight-card h-100 p-4 text-center" style="--accent-glow: rgba(239, 68, 68, 0.2);">
+            <h6 class="text-danger text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Rejected</h6>
+            <h2 class="display-5 fw-bold mb-0 text-white">@summary?.RejectedCount</h2>
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-4">
+        <div class="spotlight-card h-100 p-4 text-center" style="--accent-glow: rgba(245, 158, 11, 0.2);">
+            <h6 class="text-warning text-uppercase fw-bold mb-2" style="font-size: 0.8rem; letter-spacing: 1px;">Rework</h6>
+            <h2 class="display-5 fw-bold mb-0 text-white">@summary?.RolledBackCount</h2>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+    <h5 class="mb-0 fw-bold text-white">My Requests</h5>
+    <a asp-controller="Deployment" asp-action="Create" class="btn btn-primary btn-magnet px-4"><i class="bi bi-plus-lg me-2"></i>New Request</a>
+</div>
+
+<div class="table-responsive pb-5">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Req #</th>
+                <th>Project</th>
+                <th>Environment</th>
+                <th>Type</th>
+                <th>Target Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-secondary">No deployment requests found.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-white">@item.RequestNumber</td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25">@item.ProjectCode</span>
+                        </td>
+                        <td>@item.EnvironmentName</td>
+                        <td>@item.DeploymentTypeName</td>
+                        <td>@item.RequestedDeploymentDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <partial name="_StatusBadge" model="item.CurrentStatus" />
+                        </td>
+                        <td>
+                            <a asp-controller="Deployment" asp-action="Details" asp-route-id="@item.DeploymentRequestId" class="btn btn-sm btn-outline-light btn-magnet">View</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

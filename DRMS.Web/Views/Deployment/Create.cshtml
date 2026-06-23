@@ -1,0 +1,82 @@
+@model DRMS.Application.DTOs.CreateDeploymentRequestDto
+@{
+    ViewData["Title"] = "New Deployment Request";
+}
+
+<div class="row mb-4 align-items-center mt-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold mb-0 text-white">New Deployment Request</h2>
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light btn-magnet shadow-sm">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="glass-panel p-0 mb-5">
+    <div class="p-4 p-md-5">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="ProjectId" class="form-label text-secondary fw-bold small">PROJECT *</label>
+                    <select asp-for="ProjectId" class="form-select bg-dark text-white border-secondary" asp-items="ViewBag.Projects">
+                        <option value="">-- Select Project --</option>
+                    </select>
+                    <span asp-validation-for="ProjectId" class="text-danger small mt-1 d-block"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TargetEnvironmentId" class="form-label text-secondary fw-bold small">TARGET ENVIRONMENT *</label>
+                    <select asp-for="TargetEnvironmentId" class="form-select bg-dark text-white border-secondary" asp-items="ViewBag.Environments">
+                        <option value="">-- Select Environment --</option>
+                    </select>
+                    <span asp-validation-for="TargetEnvironmentId" class="text-danger small mt-1 d-block"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="DeploymentTypeId" class="form-label text-secondary fw-bold small">DEPLOYMENT TYPE *</label>
+                    <select asp-for="DeploymentTypeId" class="form-select bg-dark text-white border-secondary" asp-items="ViewBag.DeploymentTypes">
+                        <option value="">-- Select Type --</option>
+                    </select>
+                    <span asp-validation-for="DeploymentTypeId" class="text-danger small mt-1 d-block"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RequestedDeploymentDate" class="form-label text-secondary fw-bold small">REQUESTED DEPLOYMENT DATE *</label>
+                    <input asp-for="RequestedDeploymentDate" type="date" class="form-control bg-dark text-white border-secondary" />
+                    <span asp-validation-for="RequestedDeploymentDate" class="text-danger small mt-1 d-block"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label asp-for="SourceBranch" class="form-label text-secondary fw-bold small">SOURCE BRANCH *</label>
+                    <input asp-for="SourceBranch" class="form-control bg-dark text-white border-secondary" placeholder="e.g. main, release/v1.2" />
+                    <span asp-validation-for="SourceBranch" class="text-danger small mt-1 d-block"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="BuildVersion" class="form-label text-secondary fw-bold small">BUILD/TAG VERSION</label>
+                    <input asp-for="BuildVersion" class="form-control bg-dark text-white border-secondary" placeholder="e.g. v1.2.0" />
+                    <span asp-validation-for="BuildVersion" class="text-danger small mt-1 d-block"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ChangeSummary" class="form-label text-secondary fw-bold small">CHANGE SUMMARY / RELEASE NOTES *</label>
+                <textarea asp-for="ChangeSummary" class="form-control bg-dark text-white border-secondary" rows="4"></textarea>
+                <span asp-validation-for="ChangeSummary" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="RollbackPlan" class="form-label text-secondary fw-bold small">ROLLBACK PLAN *</label>
+                <textarea asp-for="RollbackPlan" class="form-control bg-dark text-white border-secondary" rows="3"></textarea>
+                <span asp-validation-for="RollbackPlan" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-magnet px-5 py-2">Submit Request</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

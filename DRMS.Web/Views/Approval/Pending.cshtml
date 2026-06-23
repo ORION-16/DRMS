@@ -1,0 +1,58 @@
+@model IEnumerable<DRMS.Application.DTOs.DeploymentRequestDto>
+@{
+    ViewData["Title"] = "Pending Approvals";
+}
+
+<div class="row mb-5 align-items-center mt-3">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1 text-white">Pending Approvals</h2>
+        <p class="text-secondary">Requests waiting for your action.</p>
+    </div>
+</div>
+
+<div class="table-responsive pb-5">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Req #</th>
+                <th>Project</th>
+                <th>Environment</th>
+                <th>Type</th>
+                <th>Requested By</th>
+                <th>Target Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-secondary">No pending approvals at the moment. You're all caught up!</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-white">@item.RequestNumber</td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25">@item.ProjectCode</span>
+                        </td>
+                        <td>@item.EnvironmentName</td>
+                        <td>@item.DeploymentTypeName</td>
+                        <td>@item.RequestedByName</td>
+                        <td>@item.RequestedDeploymentDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <partial name="_StatusBadge" model="item.CurrentStatus" />
+                        </td>
+                        <td>
+                            <a asp-controller="Approval" asp-action="Details" asp-route-id="@item.DeploymentRequestId" class="btn btn-sm btn-primary btn-magnet">Review</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

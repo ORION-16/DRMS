@@ -1,0 +1,116 @@
+@model DRMS.Application.DTOs.DeploymentRequestDto
+@{
+    ViewData["Title"] = $"Review {Model.RequestNumber}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold mb-0 text-white">Review @Model.RequestNumber</h2>
+    <a asp-action="Pending" class="btn btn-outline-light btn-magnet shadow-sm">Back to Pending</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="glass-panel mb-4 p-0">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 fw-bold text-white">Request Details</h5>
+            </div>
+            <div class="p-4">
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Project</div>
+                    <div class="col-sm-9 text-white">@Model.ProjectName (@Model.ProjectCode)</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Environment</div>
+                    <div class="col-sm-9 text-white">@Model.EnvironmentName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Type</div>
+                    <div class="col-sm-9 text-white">@Model.DeploymentTypeName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Source Branch</div>
+                    <div class="col-sm-9"><code class="text-danger">@Model.SourceBranch</code></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Build/Tag</div>
+                    <div class="col-sm-9 text-white">@(string.IsNullOrEmpty(Model.BuildVersion) ? "-" : Model.BuildVersion)</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Target Date</div>
+                    <div class="col-sm-9 text-white">@Model.RequestedDeploymentDate.ToString("yyyy-MM-dd")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Requested By</div>
+                    <div class="col-sm-9 text-white">@Model.RequestedByName (@Model.EmployeeCode)</div>
+                </div>
+                <hr class="border-secondary border-opacity-25 my-4" />
+                <h6 class="text-white fw-bold">Change Summary</h6>
+                <div class="p-3 rounded mb-4 text-white" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); white-space: pre-wrap;">@Model.ChangeSummary</div>
+
+                <h6 class="text-white fw-bold">Rollback Plan</h6>
+                <div class="p-3 rounded text-white" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); white-space: pre-wrap;">@Model.RollbackPlan</div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-0 mb-4">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 fw-bold text-white">Previous Approvals</h5>
+            </div>
+            <div class="p-4">
+                <div class="timeline">
+                    @if (!Model.Approvals.Any())
+                    {
+                        <p class="text-secondary fst-italic mb-0">No approvals yet.</p>
+                    }
+                    else
+                    {
+                        @foreach (var approval in Model.Approvals)
+                        {
+                            <div class="timeline-item position-relative ps-4 mb-4">
+                                <small class="text-secondary d-block fw-bold mb-1">@approval.ActionDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                <strong class="@(approval.ActionTaken == "Rejected" ? "text-danger" : "text-success")">@approval.ActionTaken</strong> 
+                                <span class="text-secondary small">by <span class="text-white">@approval.ApproverName</span> (@approval.ApproverRole)</span>
+                                @if (!string.IsNullOrEmpty(approval.Remarks))
+                                {
+                                    <div class="mt-2 p-3 rounded text-secondary small fst-italic" style="background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent-color);">
+                                        "@approval.Remarks"
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="spotlight-card p-0" style="--accent-glow: rgba(139, 92, 246, 0.2);">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 fw-bold text-white">Your Decision</h5>
+            </div>
+            <div class="p-4">
+                <form asp-action="Process" method="post">
+                    <input type="hidden" name="DeploymentRequestId" value="@Model.DeploymentRequestId" />
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary small fw-bold">ACTION REQUIRED *</label>
+                        <select name="ActionTaken" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="">-- Select Action --</option>
+                            <option value="Approved">Approve</option>
+                            <option value="Rejected">Reject</option>
+                            <option value="ReturnedForChanges">Return For Changes</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label text-secondary small fw-bold">REMARKS</label>
+                        <textarea name="Remarks" class="form-control bg-dark text-white border-secondary" rows="5" placeholder="Optional comments for approval, required for rejection/return"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-magnet w-100 py-3 text-white">Submit Decision</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

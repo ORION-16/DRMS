@@ -1,0 +1,106 @@
+@model DRMS.Application.DTOs.DeploymentRequestDto
+@{
+    ViewData["Title"] = $"Request {Model.RequestNumber}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold mb-0 text-white">@Model.RequestNumber</h2>
+    <div>
+        <partial name="_StatusBadge" model="Model.CurrentStatus" />
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light btn-magnet ms-2">Back</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="glass-panel p-0 mb-4">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 fw-bold text-white">Request Details</h5>
+            </div>
+            <div class="p-4">
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Project</div>
+                    <div class="col-sm-9 text-white">@Model.ProjectName (@Model.ProjectCode)</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Environment</div>
+                    <div class="col-sm-9 text-white">@Model.EnvironmentName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Type</div>
+                    <div class="col-sm-9 text-white">@Model.DeploymentTypeName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Source Branch</div>
+                    <div class="col-sm-9"><code class="text-danger">@Model.SourceBranch</code></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Build/Tag</div>
+                    <div class="col-sm-9 text-white">@(string.IsNullOrEmpty(Model.BuildVersion) ? "-" : Model.BuildVersion)</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 text-secondary fw-medium">Target Date</div>
+                    <div class="col-sm-9 text-white">@Model.RequestedDeploymentDate.ToString("yyyy-MM-dd")</div>
+                </div>
+                <hr class="border-secondary border-opacity-25 my-4" />
+                <h6 class="text-white fw-bold">Change Summary</h6>
+                <div class="p-3 rounded mb-4 text-white" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); white-space: pre-wrap;">@Model.ChangeSummary</div>
+
+                <h6 class="text-white fw-bold">Rollback Plan</h6>
+                <div class="p-3 rounded text-white" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); white-space: pre-wrap;">@Model.RollbackPlan</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="glass-panel p-0 mb-4">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 text-white fw-bold">Metadata</h5>
+            </div>
+            <div class="p-4">
+                <p class="text-secondary small mb-1">REQUESTED BY</p>
+                <p class="text-white mb-3">@Model.RequestedByName (@Model.EmployeeCode)</p>
+                
+                <p class="text-secondary small mb-1">SUBMITTED ON</p>
+                <p class="text-white mb-4">@Model.RequestedDate.ToString("g")</p>
+                
+                @if (Model.CurrentStatus == "Submitted" || Model.CurrentStatus == "Returned For Changes")
+                {
+                    <form asp-action="Cancel" method="post" class="mt-4" onsubmit="return confirm('Are you sure you want to cancel this request?');">
+                        <input type="hidden" name="id" value="@Model.DeploymentRequestId" />
+                        <button type="submit" class="btn btn-outline-danger btn-magnet w-100">Cancel Request</button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <div class="glass-panel p-0">
+            <div class="p-4 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0 fw-bold text-white">Approval Timeline</h5>
+            </div>
+            <div class="p-4">
+                <div class="timeline">
+                    <div class="timeline-item position-relative ps-4 mb-4">
+                        <small class="text-secondary d-block fw-bold mb-1">@Model.RequestedDate.ToString("MMM dd, yyyy HH:mm")</small>
+                        <strong class="text-primary">Request Submitted</strong>
+                        <div class="text-secondary small">by <span class="text-white">@Model.RequestedByName</span></div>
+                    </div>
+                    @foreach (var approval in Model.Approvals)
+                    {
+                        <div class="timeline-item position-relative ps-4 mb-4">
+                            <small class="text-secondary d-block fw-bold mb-1">@approval.ActionDate.ToString("MMM dd, yyyy HH:mm")</small>
+                            <strong class="@(approval.ActionTaken == "Rejected" ? "text-danger" : "text-success")">@approval.ActionTaken</strong>
+                            <div class="text-secondary small">by <span class="text-white">@approval.ApproverName</span> (@approval.ApproverRole)</div>
+                            @if (!string.IsNullOrEmpty(approval.Remarks))
+                            {
+                                <div class="mt-2 p-3 rounded text-secondary small fst-italic" style="background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent-color);">
+                                    "@approval.Remarks"
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

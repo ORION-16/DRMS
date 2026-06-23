@@ -1,0 +1,53 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+
+# User- and machine-specific .NET files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+
+# Local configuration and secrets — never commit real passwords
+appsettings.json
+appsettings.Development.json
+appsettings.Local.json
+*.secrets.json
+
+# .NET User Secrets
+/DRMS.Web/Properties/PublishProfiles/
+
+# Logs and diagnostics
+*.log
+logs/
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.bak
+
+# Local helper experiments not included in DRMS.slnx
+scratch/
+
+# Local assistant/project notes
+GEMINI.md
