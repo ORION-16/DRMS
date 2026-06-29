@@ -18,6 +18,13 @@ public interface IDeploymentRequestRepository
     Task<IEnumerable<DeploymentRequest>> GetAllAsync(int? statusId, int? projectId);
 
     Task<DashboardSummary> GetDashboardSummaryAsync(int userId, int roleId);
+
+    /// <summary>
+    /// Returns the highest SequenceOrder of Environments where this project
+    /// has at least one request in 'Deployed' status. Returns 0 if the project
+    /// has never reached a Deployed state in any environment.
+    /// </summary>
+    Task<int> GetMaxDeployedEnvironmentSequenceAsync(int projectId);
 }
 
 public class DashboardSummary

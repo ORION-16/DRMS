@@ -75,6 +75,29 @@ BEGIN
 END
 GO
 
+-- =============================================
+-- Procedure: sp_GetMaxDeployedEnvironmentSequence
+-- Returns the highest SequenceOrder of Environments
+-- where this project has a successfully Deployed request.
+-- Returns 0 if no deployments have ever reached Deployed status.
+-- Used by the service layer to enforce Dev -> Staging -> Production promotion order.
+-- =============================================
+CREATE PROCEDURE sp_GetMaxDeployedEnvironmentSequence
+    @ProjectId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT ISNULL(MAX(e.SequenceOrder), 0) AS MaxSequenceOrder
+    FROM DeploymentRequests dr
+    INNER JOIN Environments e ON dr.TargetEnvironmentId = e.EnvironmentId
+    INNER JOIN StatusMaster sm ON dr.CurrentStatusId = sm.StatusId
+    WHERE dr.ProjectId = @ProjectId
+      AND dr.IsActive = 1
+      AND sm.StatusName = 'Deployed';
+END
+GO
+
 CREATE PROCEDURE sp_GetRequestsByUser
     @UserId INT
 AS

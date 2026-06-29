@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Stakent Inspired Palette */
-    --bg-base: #0b0c10;
-    --bg-surface: #121318;
-    --bg-surface-hover: #1c1e26;
-    --text-primary: #f8fafc;
-    --text-secondary: #8b949e;
-    --border-color: rgba(255, 255, 255, 0.08);
+    /* Stakent Inspired Palette — Light Mode */
+    --bg-base: #f7f8fa;
+    --bg-surface: #ffffff;
+    --bg-surface-hover: #eef0f4;
+    --text-primary: #14161a;
+    --text-secondary: #5b6371;
+    --border-color: rgba(15, 17, 21, 0.08);
     
-    --accent-color: #8B5CF6; /* Purple */
-    --accent-glow: rgba(139, 92, 246, 0.3);
+    --accent-color: #0E7490; /* Teal */
+    --accent-glow: rgba(14, 116, 144, 0.18);
     
-    --accent-secondary: #10B981; /* Green */
+    --accent-secondary: #059669; /* Green */
 
     /* Status Colors */
     --status-submitted: #3B82F6;
@@ -26,13 +26,62 @@
 body {
     font-family: 'Outfit', sans-serif;
     background-color: var(--bg-base);
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(15, 17, 21, 0.05) 1px, transparent 1px);
     background-size: 24px 24px;
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
     margin: 0;
     display: flex; /* Setup for sidebar layout */
+}
+
+/* Theme overrides for Bootstrap utility classes
+   The views use Bootstrap's text-white / text-light / btn-outline-light
+   classes, which assumed a dark page background. On the light theme these
+   render white-on-white. Remap them to the actual theme colors instead of
+   touching every view file. Buttons with solid accent backgrounds
+   (.btn-primary) are excluded since white text there is still correct. */
+.text-white:not(.btn):not(.shiny-text),
+.text-light:not(.btn):not(.shiny-text) {
+    color: var(--text-primary) !important;
+}
+
+.btn-outline-light {
+    --bs-btn-color: var(--text-secondary);
+    --bs-btn-border-color: var(--border-color);
+    --bs-btn-hover-color: var(--text-primary);
+    --bs-btn-hover-bg: var(--bg-surface-hover);
+    --bs-btn-hover-border-color: var(--border-color);
+    --bs-btn-active-color: var(--text-primary);
+    --bs-btn-active-bg: var(--bg-surface-hover);
+    --bs-btn-active-border-color: var(--border-color);
+}
+
+.btn-outline-info {
+    --bs-btn-color: var(--accent-color);
+    --bs-btn-border-color: var(--accent-color);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--accent-color);
+    --bs-btn-hover-border-color: var(--accent-color);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--accent-color);
+    --bs-btn-active-border-color: var(--accent-color);
+}
+
+/* Some inputs are marked bg-dark/border-secondary from the old dark theme.
+   Force them back onto the light surface instead of editing every view. */
+.form-control.bg-dark,
+.form-select.bg-dark {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Pre/post text blocks (Change Summary, Rollback Plan) used a black
+   translucent box meant for a dark backdrop. Give them a light card look. */
+[style*="background: rgba(0,0,0,0.2)"] {
+    background: var(--bg-surface-hover) !important;
+    border-color: var(--border-color) !important;
 }
 
 /* Sidebar Layout */
@@ -99,7 +148,7 @@ body {
 }
 
 .sidebar .nav-link.active {
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(14, 116, 144, 0.12) 0%, transparent 100%);
     border-left: 3px solid var(--accent-color);
 }
 
@@ -135,7 +184,7 @@ body {
 }
 
 .spotlight-card:hover, .glass-panel:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(15, 17, 21, 0.15);
     transform: translateY(-2px);
 }
 
@@ -145,7 +194,7 @@ body {
     top: 0; left: 0; right: 0; bottom: 0;
     background: radial-gradient(
         600px circle at var(--mouse-x) var(--mouse-y),
-        rgba(255, 255, 255, 0.05),
+        rgba(15, 17, 21, 0.04),
         transparent 40%
     );
     z-index: 0;
@@ -219,7 +268,7 @@ body {
 }
 
 .btn-primary.btn-magnet {
-    background: linear-gradient(135deg, var(--accent-color) 0%, #6D28D9 100%);
+    background: linear-gradient(135deg, var(--accent-color) 0%, #155E75 100%);
     border: none;
 }
 
@@ -230,7 +279,7 @@ body {
 
 /* Form Controls */
 .form-control, .form-select {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     border-radius: 12px;
@@ -239,7 +288,7 @@ body {
 }
 
 .form-control:focus, .form-select:focus {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--bg-surface);
     border-color: var(--accent-color);
     box-shadow: 0 0 0 4px var(--accent-glow);
     color: var(--text-primary);
@@ -276,11 +325,11 @@ body {
 }
 
 .aurora-bg::before {
-    background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(14,116,144,0.18) 0%, transparent 70%);
     top: -20%; left: -10%;
 }
 .aurora-bg::after {
-    background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(5,150,105,0.14) 0%, transparent 70%);
     bottom: -20%; right: -10%;
     animation-direction: reverse;
 }
@@ -292,7 +341,7 @@ body {
 }
 
 .shiny-text {
-    background: linear-gradient(120deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 60%);
+    background: linear-gradient(120deg, rgba(20,22,26,0) 40%, rgba(20,22,26,0.7) 50%, rgba(20,22,26,0) 60%);
     background-size: 200% 100%;
     -webkit-background-clip: text;
     background-clip: text;
@@ -307,7 +356,7 @@ body {
 }
 
 .text-gradient {
-    background: linear-gradient(to right, #8B5CF6, #c084fc);
+    background: linear-gradient(to right, #0E7490, #38BDF8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }

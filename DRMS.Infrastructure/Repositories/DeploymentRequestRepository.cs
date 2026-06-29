@@ -91,4 +91,15 @@ public class DeploymentRequestRepository : IDeploymentRequestRepository
             new { UserId = userId, RoleId = roleId },
             commandType: CommandType.StoredProcedure);
     }
+
+    public async Task<int> GetMaxDeployedEnvironmentSequenceAsync(int projectId)
+    {
+        using var connection = _context.CreateConnection();
+        var result = await connection.QueryFirstAsync<int>(
+            "sp_GetMaxDeployedEnvironmentSequence",
+            new { ProjectId = projectId },
+            commandType: CommandType.StoredProcedure);
+
+        return result;
+    }
 }

@@ -7,14 +7,43 @@ namespace DRMS.Application.Services.Implementations;
 public class DeploymentRequestService : IDeploymentRequestService
 {
     private readonly IDeploymentRequestRepository _requestRepository;
+    private readonly IMasterDataService _masterDataService;
 
-    public DeploymentRequestService(IDeploymentRequestRepository requestRepository)
+    public DeploymentRequestService(
+        IDeploymentRequestRepository requestRepository,
+        IMasterDataService masterDataService)
     {
         _requestRepository = requestRepository;
+        _masterDataService = masterDataService;
     }
 
     public async Task<(int DeploymentRequestId, string RequestNumber)> CreateAsync(CreateDeploymentRequestDto dto, int requestedBy)
     {
+        // --- Environment Promotion Gate ---
+        // Enforce Dev → Staging → Production order per project.
+        // A project cannot target Staging unless it has a Deployed request in Development,
+        // and cannot target Production unless it has a Deployed request in Staging.
+        var environments = await _masterDataService.GetEnvironmentsAsync();
+        var targetEnv = environments.FirstOrDefault(e => e.EnvironmentId == dto.TargetEnvironmentId);
+
+        if (targetEnv == null)
+            throw new InvalidOperationException("Invalid target environment selected.");
+
+        if (targetEnv.SequenceOrder > 1)
+        {
+            var maxDeployedSequence = await _requestRepository.GetMaxDeployedEnvironmentSequenceAsync(dto.ProjectId);
+
+            if (maxDeployedSequence < targetEnv.SequenceOrder - 1)
+            {
+                var requiredEnv = environments.FirstOrDefault(e => e.SequenceOrder == targetEnv.SequenceOrder - 1);
+                throw new InvalidOperationException(
+                    $"Cannot raise a deployment request to {targetEnv.EnvironmentName}. " +
+                    $"This project must have a successful deployment to " +
+                    $"{requiredEnv?.EnvironmentName ?? "the previous environment"} first.");
+            }
+        }
+        // ----------------------------------
+
         return await _requestRepository.CreateAsync(
             dto.ProjectId, requestedBy, dto.SourceBranch,
             dto.TargetEnvironmentId, dto.DeploymentTypeId, dto.BuildVersion,
